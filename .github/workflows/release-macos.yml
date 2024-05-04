@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-15-intel ]
+        os: [ macOS-15 ]
         directory: [ install-sdk, emulator-run-cmd ]
         java_version: [ 17 ]
     steps:

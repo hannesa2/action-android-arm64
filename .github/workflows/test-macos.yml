@@ -46,7 +46,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macOS-13 ]
+        os: [ macos-15-intel ]
         api: [ 25 ]
         abi: [ x86 ]
         java_version: [ 17 ]

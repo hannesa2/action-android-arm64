@@ -33,5 +33,5 @@ inputs:
     description: 'be verbose'
     default: 'false'
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'lib/main.js'

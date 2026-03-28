@@ -1,12 +1,12 @@
-# Android action for Apple silicon arm64
+# Android action for Apple Silicon arm64
 
 This is a collection of GitHub Actions for Android development.
 It's working on an Apple Silicon arm64 (and older x86) custom runner with amazing fast espresso tests.
-It's very usefull when you run on own MacOS for private repositories.
+It's very usefull when you run on own macOS for private repositories.
 
 # Requirements
 
-Tested with **macOS-13** _arm64_ and _x86_ and **ubuntu-latest** runner images. It might work using other runners (including self-hosted ones).
+Tested with **macOS-15-intel** _arm64_ and _x86_ and **ubuntu-latest** runner images. It might work using other runners (including self-hosted ones).
 
 ## Android SDK
 This repo provides an action for installing the Android SDK on the build agent. It will override whatever setup is 
@@ -66,17 +66,17 @@ steps:
 
 - `cmd` is the shell command to execute while the emulator is booted
 - `api` is the API version of emulator
-- `tag` is either the **default** or **google_apis**. Use google_apis for emulator with google store
+- `tag` is either the **default** or **google_apis**. Use `google_apis` for emulator with Google store
 - `abi` is the abi of the emulator. x86 is the fastest one
 - `hardwareProfile` is the hardware profile of the emulator. Check the `avdmanager list` for supported value. I advise to use string names instead of ids since those might change between sdk updates
-- `cmdOptions` is value which you can use to pass additional arguments to the emulator start command. By default this is `-no-snapshot-save -noaudio -no-boot-anim`
+- `cmdOptions` is value which you can use to pass additional arguments to the emulator start command. By default, this is `-no-snapshot-save -noaudio -no-boot-anim`
 - `disableAnimations` to disable animations using the system preferences. `false` by default. Keep in mind that applications might not respect system settings and these might have no effect at all 
 - `bootTimeout` is the emulator boot timeout (default is 600 seconds = 10 minutes)
 - `portNumber` is the emulator port number (default is 5554)
 - `verbose` if you want to enable additional logging for this action
 
 ### Artifacts
-The `emulator-run-cmd` action will generate an `artifacts/logcat.log` artifact that you can use in your builds to investigate issues. For example the next snippet will save the artifact in case the previous steps had failures (your tests failed and you need these logs for investigation).
+The `emulator-run-cmd` action will generate an `artifacts/logcat.log` artifact that you can use in your builds to investigate issues. For example the next snippet will save the artifact in case the previous steps had failures (your tests failed, and you need these logs for investigation).
 
 ```yaml
 - name: Save logcat output
@@ -88,7 +88,7 @@ The `emulator-run-cmd` action will generate an `artifacts/logcat.log` artifact t
 ```
 
 ### Info about emulator-start and emulator-stop actions
-Currently GitHub Actions do not support OS processes that outlive the specific step hence you can't really do a 
+Currently, GitHub Actions do not support OS processes that outlive the specific step hence you can't really do a 
 workflow that starts the emulator and then execute your testing command in a separate step. This is the reason why
 I've written the combined `emulator-run-cmd` action. If you have multiple commands to run in parallel to emulator I suggest to write a script and execute it via the cmd arg.
 

@@ -15,7 +15,7 @@ jobs:
         directory: [ install-sdk, emulator-run-cmd ]
         java_version: [ 17 ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install Docker
         run: |
           brew install docker docker-compose colima

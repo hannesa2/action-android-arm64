@@ -16,6 +16,9 @@ jobs:
         java_version: [ 17 ]
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          submodules: true
       - name: Install Docker
         run: |
           brew install docker docker-compose colima

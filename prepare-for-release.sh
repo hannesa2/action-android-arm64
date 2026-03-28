@@ -13,3 +13,6 @@ done
 
 git checkout -b release-$(git rev-list HEAD --count)
 git commit -m "Add output of ./prepare-for-release.sh"
+git reset --hard
+git status
+echo "Successfully prepared for release. Please review the changes and push the branch to GitHub."

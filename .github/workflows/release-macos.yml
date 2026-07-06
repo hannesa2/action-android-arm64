@@ -15,7 +15,7 @@ jobs:
         directory: [ install-sdk, emulator-run-cmd ]
         java_version: [ 17 ]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: true

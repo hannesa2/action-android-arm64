@@ -86,6 +86,17 @@ export abstract class BaseAndroidSdk implements AndroidSDK {
         return `${this.androidHome()}/emulator/emulator`;
     }
 
+    // The bundled `sdkmanager` is deprecated in favor of the newer `android sdk install`
+    // CLI (https://d.android.com/tools/agents/android-cli). Use it when available (it
+    // ships alongside `sdkmanager` in recent cmdline-tools releases) and fall back to
+    // `sdkmanager` for older cmdline-tools that don't include the `android` binary.
+    sdkInstallCmd(binDir: string): string {
+        if (fs.existsSync(`${binDir}/android`)) {
+            return `${binDir}/android --sdk=${this.androidHome()} sdk install`
+        }
+        return `${binDir}/sdkmanager`
+    }
+
     async acceptLicense(): Promise<any> {
         await execIgnoreFailure(`mkdir -p ${this.androidHome()}/licenses`)
 
@@ -106,7 +117,7 @@ export abstract class BaseAndroidSdk implements AndroidSDK {
             args += " > /dev/null"
         }
 
-        await execIgnoreFailure(`bash -c \\\"${this.androidHome()}/cmdline-tools/latest/bin/sdkmanager emulator platform-tools 'system-images;android-${api};${tag};${abi}'${args}"`);
+        await execIgnoreFailure(`bash -c \\\"${this.sdkInstallCmd(`${this.androidHome()}/cmdline-tools/latest/bin`)} emulator platform-tools 'system-images;android-${api};${tag};${abi}'${args}"`);
     }
 
     async installPlatform(api: string, verbose: boolean): Promise<any> {
@@ -115,7 +126,7 @@ export abstract class BaseAndroidSdk implements AndroidSDK {
             args += " > /dev/null"
         }
 
-        await execIgnoreFailure(`bash -c \\\"${this.androidHome()}/cmdline-tools/latest/bin/sdkmanager 'platforms;android-${api}'${args}"`)
+        await execIgnoreFailure(`bash -c \\\"${this.sdkInstallCmd(`${this.androidHome()}/cmdline-tools/latest/bin`)} 'platforms;android-${api}'${args}"`)
     }
 
     async createEmulator(name: string, api: string, tag: string, abi: string, hardwareProfile: string, portNumber: number): Promise<any> {

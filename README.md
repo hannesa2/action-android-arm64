@@ -23,7 +23,14 @@ steps:
   - uses: hannesa2/action-android/install-sdk@release/0.1.16.7
 
   # Set up platform tools like adb.
-  - run: sdkmanager platform-tools
+  # (Falls back to the deprecated `sdkmanager` if the newer `android` CLI isn't bundled.)
+  - run: |
+      BIN_DIR=$(dirname "$(command -v sdkmanager)")
+      if [ -x "$BIN_DIR/android" ]; then
+        "$BIN_DIR/android" --sdk="$ANDROID_HOME" sdk install platform-tools
+      else
+        sdkmanager platform-tools
+      fi
 
   # Start ADB (and verify that pathing is working correctly).
   - run: adb devices

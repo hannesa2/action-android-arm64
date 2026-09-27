@@ -27,5 +27,12 @@ jobs:
         working-directory: emulator-run-cmd
       - uses: ./install-sdk
         name: install sdk
-      - run: sdkmanager platform-tools
+      - name: install platform-tools
+        run: |
+          BIN_DIR=$(dirname "$(command -v sdkmanager)")
+          if [ -x "$BIN_DIR/android" ]; then
+            "$BIN_DIR/android" --sdk="$ANDROID_HOME" sdk install platform-tools
+          else
+            sdkmanager platform-tools
+          fi
       - run: adb devices

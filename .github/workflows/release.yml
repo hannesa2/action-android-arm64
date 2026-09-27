@@ -1,4 +1,4 @@
-name: "Release MacOS"
+name: "Release"
 
 on:
   push:
@@ -7,61 +7,11 @@ on:
 
 jobs:
   release:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ macos-15-intel ]
-        directory: [ install-sdk, emulator-run-cmd ]
-        java_version: [ 17 ]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-          submodules: true
-      - name: Install Docker
-        run: |
-          brew install docker docker-compose colima
-          colima start
-          docker run hello-world
-      - name: Set up JDK ${{ matrix.java_version }}
-        uses: actions/setup-java@v6
-        with:
-          distribution: 'temurin'
-          java-version: ${{ matrix.java_version }}
-      - name: install node
-        run: |
-          brew install node
-          brew install nvm
-          mkdir ~/.nvm
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
-          [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-      - name: Prepare release
-        run: ./prepare-for-release.sh
-      - name: test ${{ matrix.directory }}
-        run: |
-          set -x
-          npm config delete prefix
-          source ~/.nvm/nvm.sh
-          nvm install v24
-          sudo npm install
-          sudo npm ci
-          npm run build
-        working-directory: ${{ matrix.directory }}
-      - uses: ./install-sdk
-        name: install sdk
-      - name: check changes
-        run: git status
-
-      - name: install platform-tools
-        run: |
-          BIN_DIR=$(dirname "$(command -v sdkmanager)")
-          if [ -x "$BIN_DIR/android" ]; then
-            "$BIN_DIR/android" --sdk="$ANDROID_HOME" sdk install platform-tools
-          else
-            sdkmanager platform-tools
-          fi
       - name: Find Tag
         id: tagger
         uses: jimschubert/query-tag-action@v2.3

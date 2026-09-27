@@ -76,13 +76,24 @@ export abstract class BaseAndroidSdk implements AndroidSDK {
 
         core.exportVariable('PATH', `${extraPaths}:${PATH_WITHOUT_ANDROID}`)
 
-        await execIgnoreFailure(`bash -c \\\"${this.androidHome()}/cmdline-tools/bootstrap-version/bin/sdkmanager 'cmdline-tools;latest'`)
+        await execIgnoreFailure(`bash -c \\\"${this.sdkInstallCmd(`${ANDROID_HOME}/cmdline-tools/bootstrap-version/bin`)} 'cmdline-tools;latest'`)
 
         return true
     }
 
     androidHome(): string {
         return `${process.env.HOME}/android-sdk`
+    }
+
+    // The bundled `sdkmanager` is deprecated in favor of the newer `android sdk install`
+    // CLI (https://d.android.com/tools/agents/android-cli). Use it when available (it
+    // ships alongside `sdkmanager` in recent cmdline-tools releases) and fall back to
+    // `sdkmanager` for older cmdline-tools that don't include the `android` binary.
+    sdkInstallCmd(binDir: string): string {
+        if (fs.existsSync(`${binDir}/android`)) {
+            return `${binDir}/android --sdk=${this.androidHome()} sdk install`
+        }
+        return `${binDir}/sdkmanager`
     }
 
     emulatorCmd(): string {
@@ -109,7 +120,7 @@ export abstract class BaseAndroidSdk implements AndroidSDK {
             args += " > /dev/null"
         }
 
-        await execIgnoreFailure(`bash -c \\\"${this.androidHome()}/cmdline-tools/bootstrap-version/bin/sdkmanager emulator 'cmdline-tools;latest' platform-tools 'system-images;android-${api};${tag};${abi}'${args}"`);
+        await execIgnoreFailure(`bash -c \\\"${this.sdkInstallCmd(`${this.androidHome()}/cmdline-tools/bootstrap-version/bin`)} emulator 'cmdline-tools;latest' platform-tools 'system-images;android-${api};${tag};${abi}'${args}"`);
     }
 
     async installPlatform(api: string, verbose: boolean): Promise<any> {
@@ -118,7 +129,7 @@ export abstract class BaseAndroidSdk implements AndroidSDK {
             args += " > /dev/null"
         }
 
-        await execIgnoreFailure(`bash -c \\\"${this.androidHome()}/cmdline-tools/bootstrap-version/bin/sdkmanager 'platforms;android-${api}'${args}"`)
+        await execIgnoreFailure(`bash -c \\\"${this.sdkInstallCmd(`${this.androidHome()}/cmdline-tools/bootstrap-version/bin`)} 'platforms;android-${api}'${args}"`)
     }
 
     async createEmulator(name: string, api: string, tag: string, abi: string, hardwareProfile: string, portNumber: number): Promise<any> {
